@@ -1,10 +1,11 @@
-while getopts ":c:f:e:" flag
-do
-    case "${flag}" in
-        c)  chrome_version=${OPTARG};;
-        f)  firefox_version=${OPTARG};;
-        e)  edge_version=${OPTARG};;
-    esac
+while getopts "c:f:e:" flag; do
+  case "$flag" in
+    c)  chrome_version=$OPTARG;;
+    f)  firefox_version=$OPTARG;;
+    e)  edge_version=$OPTARG;;
+    *) echo "usage: $0 [-v] [-r]" >&2
+    exit 1 ;;
+  esac
 done
 
 # Chrome
