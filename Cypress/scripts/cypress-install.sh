@@ -1,26 +1,29 @@
-while getopts ":c:" flag
+#!/bin/sh
+
+while getopts ":v:" flag
 do
     case "${flag}" in
-        c)  cypress_version=${OPTARG};;
+        v)  cypress_versions=${OPTARG};;
     esac
 done
 
-IFS=', ' read -r -a array <<< "$cypress_version"
+IFS=', ' read -r -a array <<< "$cypress_versions"
 
 for element in "${array[@]}"
 do
     echo "reading values: $element"
+    install_cypress "$element"
 done
 
-
-if [ ! -z "$cypress_version" ]; then
-    echo "Installing Cypress $cypress_version"
-else
-    cypress_version="12.10.0"
-    echo "Cypress version not specified...\n Cypress $cypress_version will be installed"
-fi
-
 install_cypress() {
+    version = "$1"
+
+    if [ ! -z "$version" ]; then
+        echo "Installing Cypress $version"
+    else
+        version="12.10.0"
+        echo "Cypress version not specified...\n Cypress $version will be installed"
+    fi
     echo "Setting required environment variables"
 
     # Do not send crash reports to Cypress
@@ -35,13 +38,13 @@ install_cypress() {
     # Point projects to globally installed Cypress
     export NODE_PATH="/usr/local/lib/node_modules"
 
-    echo "Installing Cypress version $cypress_version"
+    echo "Installing Cypress version $version"
 
-    wget --no-verbose -O /tmp/cypress.zip "https://cdn.cypress.io/desktop/$cypress_version/linux-x64/cypress.zip"
+    wget --no-verbose -O /tmp/cypress.zip "https://cdn.cypress.io/desktop/$version/linux-x64/cypress.zip"
 
     export CYPRESS_INSTALL_BINARY="/tmp/cypress.zip" 
 
-    npm install -g cypress@$cypress_version
+    npm install -g cypress@$version
 
     # Remove Cypress zip after installation
     rm /tmp/cypress.zip

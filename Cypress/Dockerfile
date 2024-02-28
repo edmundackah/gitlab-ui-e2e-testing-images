@@ -49,11 +49,11 @@ RUN wget --no-verbose /usr/src/libappindicator3-1_0.4.92-7_amd64.deb "http://ftp
 ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 
 # Browser install scripts
-COPY ./scripts/browser-install.sh /browser-install.sh
+COPY ./scripts/browser-install.sh browser-install.sh
 
-RUN /browser-install.sh -e $EDGE -c $CHROME -f $FIREFOX
+RUN ./browser-install.sh -e $EDGE -c $CHROME -f $FIREFOX -v $CYPRESS
 
-RUN rm /browser-install.sh
+RUN rm ./browser-install.sh
 
 # Verify installation(s)
 RUN echo  " node version:    $(node -v) \n" \
@@ -64,11 +64,13 @@ RUN echo  " node version:    $(node -v) \n" \
   "Firefox version: $(firefox --version) \n" \
   "Edge version:    $(microsoft-edge-stable --version) \n"
 
-# Cypress install scripts
-COPY ./scripts/cypress-install.sh /cypress-install.sh
+# # Cypress install scripts
+# COPY ./scripts/cypress-install.sh cypress-install.sh
 
-RUN /cypress-install.sh -c $CYPRESS
+# RUN ls
 
-RUN rm /cypress-install.sh
+# RUN ./cypress-install.sh -v $CYPRESS
+
+# RUN rm ./cypress-install.sh
 
 CMD echo "Image for Gitlab CI automated testing" && node

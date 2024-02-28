@@ -29,7 +29,7 @@ The Docker image can be customised by passing build arguments in your docker bui
 |-----------	|----------------	|
 | NODE      	| 20.11.0        	|
 | CYPRESS   	| 12.10.0        	|
-| EDGE      	| 110.0.1587.57  	|
+| EDGE      	| 122.0.2365.59  	|
 | CHROME    	| 121.0.6167.184 	|
 | FIREFOX   	| 123.0          	|
 
@@ -42,7 +42,7 @@ Running this command below, will build an image using the arguments specified in
 > **Note:** It is good practice to replace the `latest` tag with a version number to version your images
 
 ```bash
-docker build -t {namespace}/{image-name}:latest --build-arg NODE="20.11.0" --build-arg CYPRESS="12.10.0" --build-arg EDGE="110.0.1587.57" --build-arg CHROME="121.0.6167.184" --build-arg FIREFOX="123.0" .
+docker build -t {namespace}/{image-name}:latest --build-arg NODE="20.11.0" --build-arg CYPRESS="12.10.0" --build-arg EDGE="122.0.2365.59" --build-arg CHROME="121.0.6167.184" --build-arg FIREFOX="123.0" .
 ```
 
 #### Minimal image
@@ -74,7 +74,7 @@ Detected 3 browsers installed:
 2. Edge
   - Name: edge
   - Channel: stable
-  - Version: 110.0.1587.57
+  - Version: 122.0.2365.59 
   - Executable: microsoft-edge
 3. Firefox
   - Name: firefox
