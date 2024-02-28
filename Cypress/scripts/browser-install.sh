@@ -1,3 +1,4 @@
+#!/bin/bash
 while getopts "c:f:e:" flag; do
   case "$flag" in
     c)  chrome_version=$OPTARG;;
