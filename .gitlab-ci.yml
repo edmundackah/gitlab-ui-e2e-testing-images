@@ -1,0 +1,17 @@
+image: node:20.11.1-alpine3.19
+
+stages:
+  - test
+
+json-validator:
+  stage: test
+  before_script:
+   - echo "checking node version"
+   - node -v
+
+  script:
+   - echo "installing dependencies"
+   - npm install
+   - git diff-tree --no-commit-id --name-only $CI_COMMIT_SHA -r > changes.txt
+   - echo "run validation"
+   - npx ts-node scripts/json-validator.ts 
