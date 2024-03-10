@@ -1,17 +1,56 @@
-image: node:20.11.1-alpine3.19
+image: silverarrow/cypress-13-edge-chrome-firefox-node-20:latest
 
 stages:
   - test
+  - build
+  - trigger
 
 json-validator:
   stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   before_script:
    - echo "checking node version"
    - node -v
 
   script:
-   - echo "installing dependencies"
    - npm install
-   - git diff-tree --no-commit-id --name-only $CI_COMMIT_SHA -r > changes.txt
-   - echo "run validation"
-   - npx ts-node scripts/json-validator.ts 
+   - git ls-files '*build.json' > changes.txt
+   - npx ts-node scripts/json-validator.ts
+  
+  artifacts:
+    when: always
+    paths:
+      - changes.txt
+    expire_in: 1 week
+
+build:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  before_script:
+    - echo "checking diffs "
+    - git diff --diff-filter=d --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA '*build.json' # exclude deleted files
+  
+  script:
+    - git diff --diff-filter=d --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA '*build.json' > jobs.txt  # exclude deleted files
+    - npm install
+    - npx ts-node scripts/create-build-pipelines.ts
+  
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - jobs.txt
+      - dynamic-gitlab-ci.yml
+
+trigger:deploy:
+  stage: trigger
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  needs:
+    - build
+  trigger:
+    include:
+      - artifact: dynamic-gitlab-ci.yml # this file is generated on runtime in the build stage
+        job: build
+    strategy: depend

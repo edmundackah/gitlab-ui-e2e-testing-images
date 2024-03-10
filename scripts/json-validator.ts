@@ -1,7 +1,9 @@
 import { Draft07, Draft, JsonError } from "json-schema-library";
-import fs from "fs-extra";
+import { readFileToArray, NO_SPACES_REGEX } from "./util";
+import { readJSONSync } from "fs-extra";
+import { error } from "console";
+import { EOL } from "os";
 
-const NO_SPACES_REGEX = "/^[^\s]*$";
 
 const schema = {
     type: "array",
@@ -30,24 +32,22 @@ const schema = {
 const jsonSchema: Draft = new Draft07(schema);
 
 //read changes.txt file into array
-let changeLog: string[] = fs.readFileSync("changes.txt", {encoding: "utf-8"}).split("\r\n");
-
-//filter changelog for build.json files
-changeLog = changeLog.filter((p) => p.endsWith("build.json"));
+let changeLog: string[] = readFileToArray("changes.txt");
 
 let messages: string[] = [];
 
 //validate each modified build.json file
 changeLog.forEach((element, index, arr) => {
     //read build json file
-    const json = fs.readJSONSync(element);
+    const json = readJSONSync(element);
 
     //validate with JsonSchema
     const res: JsonError[] = jsonSchema.validate(json);
+
     res.length > 0 && messages.push(`\n${element} failed validation with the following errors:\n`);
     res.forEach((element) => messages.push(`\t${element.message}`));
 });
 
-messages.forEach((element) => console.error(element));
+messages.forEach((element) => error(element));
 
 process.exit(messages.length > 0 ? 1 : 0);
