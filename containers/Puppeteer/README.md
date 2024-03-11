@@ -4,6 +4,7 @@
 
 * [Building the image](#building-the-image)
     * [Setting the Node version](#setting-the-node-version)
+    * [Setting Chrome version](#setting-chrome-version)
     * [Configuring Puppeteer executable path](#configuring-puppeteer-executable-path)
 
 ## Building the image
@@ -23,26 +24,34 @@ docker push {namespace}/{image-name}:latest
 
 The default Node version is Node 20.11.1
 
-You can change the Node version by adding the following build arguments to the docker build command
+You can change the Node version by adding the following build argument to the docker build command
 
 ```bash
---build-arg NODE_BASE_IMAGE="<insert node version>"
+--build-arg NODE_VERSION="<insert node version>"
 ```
 
-> **Note:** To change the Node version, you need to pick a base image from the following [repository](https://hub.docker.com/_/node) Image **tag must have the alpine suffix**
-
-The command below is an example base image for Node 14.21.1
+The command below is an example of how to install Node 14.21.1
 
 ```bash
---build-arg NODE_BASE_IMAGE="14.21.3-alpine3.16"
+--build-arg NODE_VERSION="14.21.1"
+```
+
+### Setting Chrome version
+
+> **Note:** This image supports only Google Chrome stable releases
+
+The default Chrome version is 121.0.6167.184
+
+You can change the Chrome version by adding the following build argument to the docker build command
+
+```bash
+--build-arg CHROME_VERSION="<insert chrome version>"
 ```
 
 ### Configuring Puppeteer executable path
 
-> **Note**: To use this chromium installation, set Puppeteer's executable path to `/usr/bin/chromium-browser`
-
 Your launch code should look like the one below
 
 ```TS
-  const browser = await puppeteer.launch({executablePath: '/usr/bin/chromium-browser'});
+  const browser = await puppeteer.launch({executablePath: '/usr/bin/google-chrome-stable', args: ['--no-sandbox']});
 ```
