@@ -1,33 +1,7 @@
 import { Draft07, Draft, JsonError } from "json-schema-library";
-import { readFileToArray, NO_SPACES_REGEX } from "./util";
+import { readFileToArray, schema, checkForDuplicateNames } from "./util";
 import { readJSONSync } from "fs-extra";
 import { error } from "console";
-import { EOL } from "os";
-
-
-const schema = {
-    type: "array",
-    minItems: 1,
-    items: {
-        type: "object",
-        required: ["name"],
-        properties: {
-            name: {
-                type: "string",
-                pattern: NO_SPACES_REGEX,
-                minimum: 3
-            },
-            args: {
-                type: "array",
-                items: {
-                    type: "string",
-                    pattern: NO_SPACES_REGEX,
-                    minimum: 3
-                }
-            }
-        }
-    }
-};
 
 const jsonSchema: Draft = new Draft07(schema);
 
@@ -40,6 +14,9 @@ let messages: string[] = [];
 changeLog.forEach((element, index, arr) => {
     //read build json file
     const json = readJSONSync(element);
+
+    //check for duplicate image name
+    checkForDuplicateNames(json);
 
     //validate with JsonSchema
     const res: JsonError[] = jsonSchema.validate(json);
